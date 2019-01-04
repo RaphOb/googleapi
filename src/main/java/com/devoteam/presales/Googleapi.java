@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class Googleapi {
-    public static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
-    public static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    protected static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
+    protected static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
     /**
@@ -44,7 +44,7 @@ public class Googleapi {
      * @return An authorized Credential object.
      * @throws IOException If the credentials.json file cannot be found.
      */
-    public static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+    protected static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
         InputStream in = Googleapi.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
@@ -155,7 +155,7 @@ public class Googleapi {
     }
 
     // delete event
-    private static void deleteEvent(Calendar service, String calendarId, String eventID) throws IOException{
+    protected static void deleteEvent(Calendar service, String calendarId, String eventID) throws IOException{
         service.events().delete(calendarId, eventID).execute();
     }
 
