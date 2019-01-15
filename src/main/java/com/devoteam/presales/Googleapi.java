@@ -18,6 +18,7 @@ import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,14 +30,14 @@ import java.util.List;
 public class Googleapi {
     protected static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
     protected static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "tokens";
+    private static final String TOKENS_DIRECTORY_PATH = "c:/temp/toup/tokens";
 
     /**
      * Global instance of the scopes required by this quickstart.
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
     private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
-    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+    static java.io.File CREDENTIALS_FILE_PATH = new java.io.File("c:/temp/credentials.json");
 
     /**
      * Creates an authorized Credential object.
@@ -46,7 +47,7 @@ public class Googleapi {
      */
     protected static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
-        InputStream in = Googleapi.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
         // Build flow and trigger user authorization request.
@@ -70,11 +71,20 @@ public class Googleapi {
         // addCalendar(service);
         //  checkIdevent(service, "bor");
         //  deleteEvent(service,"primary", checkIdevent(service,"bor"));
-        updEvent(service, "primary", checkIdevent(service,"bor"), patchEvent());
-
+       // updEvent(service, "primary", checkIdevent(service,"bor"), patchEvent());
+        addEvent(service, newEvent());
 
     }
 
+    /**
+     * @function : checkIdevent
+     * @return : String
+     *
+     * @param : Objet Calendar
+     * @param : String, recherche par le nom.
+     *
+     * @details : Recheche un evenement .
+     */
     public static String checkIdevent(Calendar service, String q) throws IOException
     {
         DateTime now = new DateTime(System.currentTimeMillis());
@@ -99,7 +109,14 @@ public class Googleapi {
         return res;
     }
 
-    // check events
+    /**
+     * @function : checkCal
+     *
+     * @param : Objet Calendar
+     * @param : Integer, le nombre d'event à afficher.
+     *
+     * @details : Affiche les N events du cal.
+     */
     public static void checkCal(Calendar service, int nb)throws IOException  {
         DateTime now = new DateTime(System.currentTimeMillis());
         Events events = service.events().list("primary")
@@ -123,18 +140,30 @@ public class Googleapi {
             }
         }
     }
-    // function new event
+    /**
+     * @Objet : newEvent
+     * @return : un objet Event
+     *
+     * @details : un objet de type Event.
+     */
     private static Event newEvent() {
         Event event = new Event();
         event.setSummary("New Event");
-        DateTime start = new DateTime("2018-12-19T09:00:00+01:00");
+        DateTime start = new DateTime("2018-01-15T09:00:00+01:00");
         event.setStart(new EventDateTime().setDateTime(start));
-        DateTime end = new DateTime("2018-12-19T10:00:00+01:00");
+        DateTime end = new DateTime("2018-01-15T10:00:00+01:00");
         event.setEnd(new EventDateTime().setDateTime(end));
         return event;
     }
 
-    //Object: Event to patch
+    /**
+     * @Objet : patchEvent
+     * @return : un objet Event
+     *
+     * @param : (a ajouter : tableau des attendee)
+     * @param : ( un titre si besoin de le modifier)
+     * @details : modifie un event.
+     */
     private static Event patchEvent(){
         Event event = new Event();
         event.setSummary("Bor booked");
@@ -147,21 +176,42 @@ public class Googleapi {
         return event;
     }
 
-    // Add event
-    private static  void addEvent(Calendar service) throws IOException {
+    /**
+     * @Objet : addEvent
+     *
+     * @param : objet Calendar
+     * @details : ajoute un evenement
+     */
+    private static  void addEvent(Calendar service, Event event) throws IOException {
         String calendarId = "primary";
-        Event event = newEvent();
-        event = service.events().insert(calendarId, event).execute();
+        service.events().insert(calendarId, event).execute();
     }
 
-    // delete event
+    /**
+     * @Objet : deleteEvent
+     *
+     * @param : objet Calendar
+     * @param : id du calendar
+     * @param : id de l'event
+     *
+     * @details : supprime un event
+     */
     protected static void deleteEvent(Calendar service, String calendarId, String eventID) throws IOException{
         service.events().delete(calendarId, eventID).execute();
     }
 
-    //Update event
-    private static void updEvent(Calendar service, String calendarId, String eventId, Event Event) throws IOException{
-        service.events().patch(calendarId, eventId, Event)
+    /**
+     * @Objet : upEvent
+     *
+     * @param : objet Calendar
+     * @param : id du calendar
+     * @param : id de l'event
+     * @param : un objet event
+     *
+     * @details : supprime un event
+     */
+    private static void updEvent(Calendar service, String calendarId, String eventId, Event event) throws IOException{
+        service.events().patch(calendarId, eventId, event)
                 .setSendNotifications(true)
                 .execute();
         System.out.println("Event patch !");
