@@ -37,7 +37,12 @@ public class Googleapi {
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
     private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
-    static java.io.File CREDENTIALS_FILE_PATH = new java.io.File("c:/temp/credentials.json");
+    static java.io.File CREDENTIALS_FILE_PATH;
+
+    public Googleapi(String path)
+    {
+        CREDENTIALS_FILE_PATH = new java.io.File(path);
+    }
 
     /**
      * Creates an authorized Credential object.
@@ -72,7 +77,7 @@ public class Googleapi {
         //  checkIdevent(service, "bor");
         //  deleteEvent(service,"primary", checkIdevent(service,"bor"));
        // updEvent(service, "primary", checkIdevent(service,"bor"), patchEvent());
-        addEvent(service, newEvent());
+        //addEvent(service, newEvent());
 
     }
 
@@ -85,8 +90,13 @@ public class Googleapi {
      *
      * @details : Recheche un evenement .
      */
-    public static String checkIdevent(Calendar service, String q) throws IOException
+    public static String checkIdevent(String q) throws IOException, GeneralSecurityException
     {
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
         DateTime now = new DateTime(System.currentTimeMillis());
         String res = "null";
         Events events = service.events().list("primary")
@@ -117,7 +127,12 @@ public class Googleapi {
      *
      * @details : Affiche les N events du cal.
      */
-    public static void checkCal(Calendar service, int nb)throws IOException  {
+    public static void checkCal(int nb)throws IOException, GeneralSecurityException  {
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
         DateTime now = new DateTime(System.currentTimeMillis());
         Events events = service.events().list("primary")
                 .setMaxResults(nb)
@@ -182,7 +197,12 @@ public class Googleapi {
      * @param : objet Calendar
      * @details : ajoute un evenement
      */
-    private static  void addEvent(Calendar service, Event event) throws IOException {
+    private static  void addEvent(Event event) throws IOException, GeneralSecurityException {
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
         String calendarId = "primary";
         service.events().insert(calendarId, event).execute();
     }
@@ -196,7 +216,13 @@ public class Googleapi {
      *
      * @details : supprime un event
      */
-    protected static void deleteEvent(Calendar service, String calendarId, String eventID) throws IOException{
+    protected static void deleteEvent(String calendarId, String eventID) throws IOException, GeneralSecurityException
+    {
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
         service.events().delete(calendarId, eventID).execute();
     }
 
@@ -210,7 +236,13 @@ public class Googleapi {
      *
      * @details : supprime un event
      */
-    private static void updEvent(Calendar service, String calendarId, String eventId, Event event) throws IOException{
+    private static void updEvent(String calendarId, String eventId, Event event) throws IOException, GeneralSecurityException
+    {
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
         service.events().patch(calendarId, eventId, event)
                 .setSendNotifications(true)
                 .execute();

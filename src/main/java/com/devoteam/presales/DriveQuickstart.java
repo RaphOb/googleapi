@@ -33,8 +33,14 @@ public class DriveQuickstart {
      * Global instance of the scopes required by this quickstart.
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
-    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
-    static java.io.File CREDENTIALS_FILE_PATH = new java.io.File("c:/temp/credentials.json");
+
+        private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
+        static java.io.File CREDENTIALS_FILE_PATH;
+
+    public DriveQuickstart(String path)
+    {
+        CREDENTIALS_FILE_PATH = new java.io.File(path);
+    }
 
     /**
      * Creates an authorized Credential object.
@@ -59,20 +65,11 @@ public class DriveQuickstart {
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
+    public static void main(String... args) throws IOException, GeneralSecurityException
+    {
 
-    public static void main(String... args) throws IOException, GeneralSecurityException {
-
-
-        checkFile("CWG");
-        createFolder("new_folder","1JPKV5A0uVnvSwLvJZtj2mEAdsUZoCaBs");
-        // checkLink("new");
-        String ing = getFileId("Invoices");
-        System.out.println(ing);
-        String ipg = getFileId("Test_folder_1");
-        System.out.println(ipg);
-        copyFolder("1JPKV5A0uVnvSwLvJZtj2mEAdsUZoCaBs","10Jn1zUljSSeoyE0OyCJX-QfXLeMhX-hZ" );
-        uploadFile("test", "c://test.txt");
     }
+
 /**
  * @function : checkFile
  * @return : String;
